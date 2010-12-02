@@ -34,6 +34,9 @@ describe User do
   it "should accept valid email addresses" do
     addresses = %w[user@foo.com THE_USER@foo.bar.org foo-bar@bix.com
         foo@bar-baz.net first.last@foo.jp foo@bar.museum john&kate+8@foo.bar.edu]
+    addresses << "a@" + ( "a." * 125 ) + "jp"
+    addresses << ( "a" * 64 ) + "@foo-bar.gov"
+    addresses << "a@" + ( "a" * 63 ) + ".gov"
     addresses.each do |address|
       valid_email_user = User.new( @attr.merge( :email => address ) )
       valid_email_user.should be_valid
@@ -42,8 +45,9 @@ describe User do
 
   it "should reject invalid email addresses" do
     addresses = %w[user@foo,com user_at_foo.org example.user@foo. foo.@bar.com
-        foo@.com foo@bar..com foo..bar@biz.com .foo@bar.com foo@bar.mkiuji]
-    addresses << "a@" + ("b" * 249) + ".com"
+        foo@.com foo@bar..com foo..bar@biz.com .foo@bar.com foo@bar.mkiuj]
+    addresses << "a@" + ( "b" * 64 ) + ".com"
+    addresses << "a@" + ( ( ( "b" * 63 ) + "." ) * 5 ) + "com"
     addresses << ("a" * 65) + "@foo.com"
     addresses.each do |address|
       invalid_email_user = User.new( @attr.merge( :email => address ) )

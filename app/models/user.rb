@@ -11,10 +11,30 @@
 #
 
 require 'digest'
+
 class User < ActiveRecord::Base
   include ActiveModel::Validations
 
   class EmailValidator < ActiveModel::EachValidator
+    def help
+      Helper.instance
+    end
+
+    class Helper
+      include Singleton
+      include ActionView::Helpers::TextHelper
+
+      def pluralize_no_count( count, singular, plural = nil )
+        if count == 1
+          return singular
+        elseif plural.nil?
+          return pluralize( singular )
+        else
+          return plural
+        end        
+      end
+    end
+
     def validate_each( record, attribute, value )
 
       # special characters that may appear in the local_part of an email address
@@ -49,30 +69,53 @@ class User < ActiveRecord::Base
       # email_regex - matches strings of the form local_part@domain
       #email_regex = /\A(#{local_part})@(#{domain})\z/i
       email_regexp = Regexp.new( "\\A(#{local_part})@(#{domain})\\z", Regexp::IGNORECASE )
-
-      #record.errors[ attribute ] << ( options[ :message ] || "is not an email" ) unless
-      #  value =~ email_regexp
-
       if !( value =~ email_regexp )
-        return record.errors[ attribute ] << ( options[ :message ] || "is not an email" )  
+        return record.errors[ attribute ] << ( options[ :message ] ||
+          ": '#{value}' is not an email address" )  
       end
+      # record.errors[ attribute ] << ( options[ :message ] || "is not an email address" ) unless
+      #   value =~ email_regexp
 
       # the local part of an email address is limited to 64 characters or less
       local_part_length = 64
-      local_part_length_regexp = /\A[^@]{0,#{local_part_length}}@/i
-      
-      if !( value =~ local_part_length_regexp )
-        return record.errors[ attribute ] << ( options[ :message ] || "is not an email" )  
-      end                
+      local_part_length_regexp = /\A[^@]{0,#{local_part_length}}@/i    
+      chars = help.pluralize( local_part_length, 'character' )
+      record.errors[ attribute ] << ( options[ :message ] ||
+        ": '#{value}' is not an email address, the part before the @ may not exceed #{chars}" ) unless
+        value =~ local_part_length_regexp
+
+      # the domain part of an email address may not have more than 127
+      # labels.  126 not including the top level domain
+      number_labels = 126
+      number_labels_regexp = /@([^\.]+\.){1,#{number_labels}}[a-z]+\z/i
+      dots = help.pluralize( number_labels, 'dot' )
+      record.errors[ attribute ] << ( options[ :message ] ||
+        ": '#{value}' is not an email address, the part after the @ may not have more than #{dots} (.)" ) unless
+        value =~ number_labels_regexp
+
+      # labels may not exceed 63 characters
+      label_length = 63
+      label_length_regexp = /@([^\.]{1,#{label_length}}\.)+[a-z]+\z/i
+      chars = help.pluralize_no_count( label_length, 'character' )
+      record.errors[ attribute ] << ( options[ :message ] ||
+        ": '#{value}' is not an email address, the part after the @ may not have more than #{label_length} consecutive non-dot (.) characters" ) unless
+        value =~ label_length_regexp
+
+      # the full domain name may not exceed 253 characters
+      domain_length = 253
+      domain_length_regexp = /@.{4,#{domain_length}}\z/i
+      chars = help.pluralize( domain_length, 'character' )
+      record.errors[ attribute ] << ( options[ :message ] ||
+        ": '#{value}' is not an email address, the part after the @ may not have more than #{chars}" ) unless
+        value =~ domain_length_regexp
 
       # the entire email address is limited to 254 characters or less
       email_address_length = 254
       email_address_length_regexp = /\A.{0,#{email_address_length}}\z/i
-      
-      if !( value =~ email_address_length_regexp )
-        return record.errors[ attribute ] << ( options[ :message ] || "is not an email" )  
-      end
-                    
+      chars = help.pluralize( email_address_length, 'character')
+      record.errors[ attribute ] << ( options[ :message ] ||
+        ": '#{value}' is not an email address, the entire email address may not exceed #{chars}" ) unless
+        value =~ email_address_length_regexp
     end
   end
 
@@ -101,7 +144,7 @@ class User < ActiveRecord::Base
   def self.authenticate( email, submitted_password )
     user = find_by_email( email )
     #return nil if user.nil?
-    return user if user.has_password?( submitted_password ) unless user.nil?
+    user if user.has_password?( submitted_password ) unless user.nil?
   end
 
   private
