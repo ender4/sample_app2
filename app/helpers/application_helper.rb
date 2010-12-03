@@ -14,9 +14,9 @@ module ApplicationHelper
     image_tag("logo.png", :alt => "Sample App", :class => "round")
   end
 
-  def pluralize_no_count( count, singular, plural = nil )
-    singular unless count == 1
-    plural unless plural.nil?
-    pluralize( singular )
-  end
+  # def pluralize_no_count( count, singular, plural = nil )
+  #   return singular unless count == 1
+  #   return plural unless plural.nil?
+  #   return pluralize( singular )
+  # end
 end
