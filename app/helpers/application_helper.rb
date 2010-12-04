@@ -14,9 +14,32 @@ module ApplicationHelper
     image_tag("logo.png", :alt => "Sample App", :class => "round")
   end
 
-  # def pluralize_no_count( count, singular, plural = nil )
-  #   return singular unless count == 1
-  #   return plural unless plural.nil?
-  #   return pluralize( singular )
-  # end
+  def help
+    Helper.instance
+  end
+
+  class Helper
+    include Singleton
+    include ActionView::Helpers::TextHelper
+    
+    def help2
+      Helper2.instance
+    end
+
+    class Helper2
+      include Singleton
+      include ActiveSupport::Inflector
+    end
+    
+    def pluralize_no_count( count, singular, plural = nil )
+      if count == 1
+        singular
+      elsif plural.nil?
+        help2.pluralize( singular )
+      else
+        plural
+      end        
+    end
+  end
+
 end
