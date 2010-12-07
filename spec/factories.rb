@@ -4,3 +4,7 @@ Factory.define :user do |user|
   user.password "bazbix"
   user.password_confirmation "bazbix"
 end
+
+Factory.sequence :email do |n|
+  "person-#{n}@example.com"
+end
