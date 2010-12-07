@@ -52,6 +52,13 @@ describe UsersController do
         response.should have_selector( "a", :href => "/users?page=2",
                                             :content => "Next" )
       end
+    
+      describe "for non-admin users" do
+        it "should not show delete links" do
+          get :index
+          response.should_not have_selector( "a[href]", :content => "delete" )
+        end
+      end
     end
   end
   
@@ -120,6 +127,19 @@ describe UsersController do
       get :new
       response.should have_selector(
         "input[name='user[password_confirmation]'][type='password']")
+    end
+    
+    describe "for signed-in users" do
+      
+      before( :each ) do
+        @user = Factory( :user )
+        test_sign_in( @user )
+      end
+    
+      it "should redirect to the home page" do
+        get :new, :id => @user
+        response.should redirect_to( root_path )
+      end
     end
   end
   
@@ -206,6 +226,30 @@ describe UsersController do
         controller.should be_signed_in
       end
     end
+    
+    describe "for signed-in users" do
+      
+      before( :each ) do
+        @user = Factory( :user )
+        test_sign_in( @user )
+        @attr = { :name                  => 'New User',
+                  :email                 => 'new_user@example.com',
+                  :password              => 'foobar',
+                  :password_confirmation => 'foobar' }
+      end
+      
+      it "should not create a user" do
+        lambda do
+          post :create, :user => @attr
+        end.should_not change( User, :count )
+      end
+
+    
+      it "should redirect to the home page" do
+        get :new, :id => @user
+        response.should redirect_to( root_path )
+      end
+    end
   end
 
   describe "PUT 'update'" do
@@ -259,12 +303,14 @@ describe UsersController do
     end
   end
   
-  describe "authentication od edit/update pages" do
+  describe "authentication of edit/update pages" do
+  
     before( :each ) do
       @user = Factory( :user )
     end
     
     describe "for non-signed-in users" do
+    
       it "should deny access to 'edit'" do
         get :edit, :id => @user
         response.should redirect_to( signin_path )
@@ -319,8 +365,8 @@ describe UsersController do
     describe "as an admin user" do
       
       before( :each ) do
-        admin = Factory( :user, :email => "admin@example.com", :admin => true )
-        test_sign_in( admin )
+        @admin = Factory( :user, :email => "admin@example.com", :admin => true )
+        test_sign_in( @admin )
       end
       
       it "should destroy the user" do
@@ -332,6 +378,30 @@ describe UsersController do
       it "should redirect to the users page" do
         delete :destroy, :id => @user
         response.should redirect_to( users_path )
+      end
+      
+      describe "when trying to destroy self" do
+      
+        it "should not remove user" do
+          lambda do
+            delete :destroy, :id => @admin
+          end.should_not change( User, :count )        
+        end
+        
+        it "should redirect to 'index' page" do
+          delete :destroy, :id => @admin
+          response.should redirect_to( users_path )
+        end
+        
+        it "should flash a notice" do
+          delete :destroy, :id => @admin
+          flash[:notice].should =~ /not delete/i
+        end
+        
+        #it "should have the right title" do
+        #  delete :destroy, :id => @admin
+        #  response.should have_selector( "title", :content => "All users" )
+        #end
       end
     end
   end

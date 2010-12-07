@@ -14,13 +14,19 @@ class UsersController < ApplicationController
   end
 
   def new
-    @user = User.new
-    @title = "Sign up"
+    if signed_in?
+      redirect_to root_path, :notice => "Please signout first before creating a new account"
+    else
+      @user = User.new
+      @title = "Sign up"
+    end
   end
 
   def create
     @user = User.new( params[ :user ] )
-    if @user.save
+    if signed_in?
+      redirect_to root_path, :notice => "Please signout first before creating a new account"
+    elsif @user.save
       sign_in @user
       flash[ :success ] = "Welcome to the Sample App!"
       redirect_to @user
@@ -49,9 +55,15 @@ class UsersController < ApplicationController
   end
   
   def destroy
-    User.find( params[ :id ] ).destroy
-    flash[ :success ] = "User destroyed"
-    redirect_to users_path
+    user = User.find( params[ :id ] )
+    if current_user?( user )
+      flash[ :notice ] = "Admins may not delete themselves"
+      redirect_to users_path
+    else
+      user.destroy
+      flash[ :success ] = "User destroyed"
+      redirect_to users_path
+    end
   end
   
   private

@@ -165,21 +165,20 @@ ul.users {
 .field_with_errors {
   margin-top: 10px;
   padding: 2px;
-  background-color: red;
+  background-color: #8a1f11;
   display: table;
 }
 
-.field_with_errors label {
+/*.field_with_errors label {
   color: #fff;
-}
+}*/
 
 #error_explanation {
-  width: 400px;
-  border: 2px solid red;
-  padding: 7px;
-  padding-bottom: 12px;
-  margin-bottom: 20px;
-  background-color: #333;
+  padding:0.8em;
+  margin-bottom:1em;
+  border:2px solid #fbc2c4;
+  background:#fbe3e4;
+  color:#8a1f11;
 }
 
 #error_explanation h2 {
@@ -187,13 +186,13 @@ ul.users {
   font-weight: bold;
   padding: 5px 5px 5px 15px;
   font-size: 12px;
-  margin: -7px;
-  background-color: #c00;
-  color: #fff;
+  margin: -12px -12px 0px -11px;
+  background-color: #8a1f11;
+  color: #fbe3e4;
 }
 
 #error_explanation p {
-  color: #fff;
+  /* color: #333; */
   margin-bottom: 0;
   padding: 5px;
 }
@@ -201,6 +200,4 @@ ul.users {
 #error_explanation ul li {
   font-size: 12px;
   list-style: square;
-  color: red;
 }
-
