@@ -298,3 +298,7 @@ form.new_micropost div.counter, form.new_micropost div.actions {
   padding-left: 10px;
 }
 
+.ajax_submit {
+  display: none;
+}
+

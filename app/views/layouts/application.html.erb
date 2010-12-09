@@ -4,7 +4,6 @@
     <title><%= title %></title>
     <%= csrf_meta_tag %>
     <%= render 'layouts/stylesheets' %>
-    <%= javascript_include_tag :all %>
   </head>
   <body>
     <div class='container'>
@@ -18,5 +17,9 @@
       <%= render 'layouts/footer' %>
       <%= debug(params) if Rails.env.development? %>
    </div>
+  <%= javascript_include_tag 'jquery-1.4.4.min' %>
+  <%= javascript_include_tag 'rails' %>
+  <%= javascript_include_tag 'jquery.charcounter' %>
+  <%= javascript_include_tag 'application' %>
   </body>
 </html>

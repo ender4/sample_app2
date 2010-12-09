@@ -188,8 +188,8 @@ describe User do
       end
       
       it "should include the user's microposts" do
-        @user.feed.include?( @mp1 ).should be_true
-        @user.feed.include?( @mp2 ).should be_true
+        @user.feed.should include( @mp1 )
+        @user.feed.should include( @mp2 )
       end
       
       it "should not include a different user's microposts" do
@@ -197,6 +197,63 @@ describe User do
                        :user => Factory( :user, :email => Factory.next( :email ) ) )
         @user.feed.include?( mp3 ).should be_false
       end
+    end
+  end
+  
+  describe "relationships" do
+    
+    before( :each ) do
+      @user = User.create!( @attr )
+      @followed = Factory( :user )
+    end
+    
+    it "should have a relationships method" do
+      @user.should respond_to( :relationships )
+    end
+    
+    it "should have a following method" do
+      @user.should respond_to( :following )
+    end
+    
+    it "should have a following? method" do
+      @user.should respond_to( :following? )
+    end
+    
+    it "should have a follow! method" do
+      @user.should respond_to( :follow! )
+    end
+    
+    it "should follow another user" do
+      @user.follow!( @followed )
+      @user.should be_following( @followed )
+    end
+    
+    it "should include the followed user in the following array" do
+      @user.follow!( @followed )
+      @user.following.should include( @followed )
+    end
+    
+    it "should have an unfollow! method" do
+      @user.should respond_to( :unfollow! )
+    end
+    
+    it "should unfollow a user" do
+      @user.follow!( @followed )
+      @user.unfollow!( @followed )
+      @user.should_not be_following( @followed )
+    end
+    
+    it "should have a reverse_relationships method" do
+      @user.should respond_to( :reverse_relationships )
+    end
+    
+    it "should have a followers method" do
+      @user.should respond_to( :followers )
+    end
+    
+    it "should include the follower in the followers array" do
+      @user.follow!( @followed )
+      @followed.followers.should include( @user )
     end
   end
 end
