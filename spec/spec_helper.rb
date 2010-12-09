@@ -2,6 +2,8 @@
 ENV["RAILS_ENV"] ||= 'test'
 require File.expand_path("../../config/environment", __FILE__)
 require 'rspec/rails'
+require 'faker'
+
 #require 'webrat'
 #require 'webrat/core/matchers'
 

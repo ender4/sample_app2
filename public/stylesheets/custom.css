@@ -19,7 +19,7 @@ section {
   margin-top: 1em;
   font-size: 120%;
   padding: 20px;
-  background: #444;
+  background: #333;
 }
 
 section h1 {
@@ -50,8 +50,8 @@ nav {
 }
 
 nav {
-  background: #444;
-  padding: 0 0.7em;
+  background: #333;
+  padding: 0;
   white-space: nowrap;
 }
 
@@ -63,16 +63,26 @@ nav ul {
 nav ul li {
   list-style-type: none;
   display: inline-block;
-  padding: 0.2em 0;
+  padding: 0;
+  margin: 0;
 }
 
 nav ul li:hover {
-  background: #333;
+  background: #222;
 }
 
 nav ul li a {
-  padding: 0 5px;
+  display: block;
+  padding: 2px 5px;
   font-weight: bold;
+}
+
+nav ul li:first-child a {
+  padding-left: 15px;
+}
+
+nav ul li:last-child a {
+  padding-right: 15px;
 }
 
 nav ul li a:visited {
@@ -136,7 +146,7 @@ td.sidebar {
   width: 30%;
   padding: 1em;
   vertical-align: top;
-  background: #333;
+  background: #222;
 }
 
 .profile img.gravatar {
@@ -201,3 +211,90 @@ ul.users {
   font-size: 12px;
   list-style: square;
 }
+
+/* microposts */
+
+h1.micropost {
+  margin-bottom: 0.3em;
+}
+
+table.microposts {
+  margin-top: 1em;
+}
+
+table.microposts tr {
+  height: 70px;
+}
+
+.microposts tbody tr:nth-child(2n) td.delete,
+.microposts tbody tr.even td.delete {
+  background-color: #333;
+}
+
+table.microposts tr td.gravatar,
+table.microposts tr td.micropost {
+  /*border-top: 1px solid #ccc;*/
+  vertical-align: top;
+  padding-top: 10px;
+  /*background-color: #222;*/
+}
+
+.microposts tbody tr:nth-child(2n) td.gravatar,
+.microposts tbody tr.even td.gravatar,
+.microposts tbody tr:nth-child(2n) td.micropost,
+.microposts tbody tr.even td.micropost {
+  background-color: #222;
+}
+
+/*
+.microposts tbody tr:nth-child(2n+1) td.gravatar,
+.microposts tbody tr.odd td.gravatar,
+.microposts tbody tr:nth-child(2n+1) td.micropost,
+.microposts tbody tr.odd td.micropost {
+  background: none repeat scroll 0 0 #555;
+}
+
+.microposts tbody tr:first-child td {
+  border-top: none;
+}
+*/
+
+table.microposts tr td.micropost span.timestamp {
+  display: block;
+  font-size: 85%;
+  color: #ccc;
+}
+
+div.user_info img {
+  padding-right: 0.1em;
+}
+
+div.user_info a {
+  text-decoration: none;
+}
+
+div.user_info span.user_name {
+  position: absolute;
+}
+
+div.user_info span.microposts {
+  font-size: 80%;
+}
+
+form.new_micropost {
+  margin-bottom: 2em;
+}
+
+form.new_micropost textarea {
+  height: 4em;
+  margin-bottom: 0;
+}
+
+form.new_micropost div.counter, form.new_micropost div.actions {
+  display: inline;
+  float: left;
+  color: #ccc;
+  font-size: 80%;
+  padding-left: 10px;
+}
+

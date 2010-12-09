@@ -113,7 +113,8 @@ class User < ActiveRecord::Base
 
   attr_accessor :password
   attr_accessible :name, :email, :password, :password_confirmation
-
+  
+  has_many :microposts, :dependent => :destroy
 
   validates :name,     :presence     => true,
                        :length       => { :maximum => 64 }
@@ -143,6 +144,11 @@ class User < ActiveRecord::Base
   def self.authenticate_with_salt( id, cookie_salt )
     user = find_by_id( id )
     ( user && user.salt == cookie_salt ) ? user : nil
+  end
+  
+  def feed
+    # TODO
+    Micropost.where( "user_id = ?", id )
   end
 
   private
